@@ -7,7 +7,7 @@
 > Dive into the culinary cosmos with NeonChef, a hyper-stylized, AI-driven recipe finder that transforms your meal ideas and even dish photos into delectable recipes. Crafted with a futuristic aesthetic by **Dear Virus**, NeonChef isn't just a tool; it's an experience.
 ---
 
-<h1><a href="https://voluble-cuchufli-bbf97e.netlify.app">| 🌐 𝗟𝗜𝗩𝗘 Preview</a></h1>
+<h1><a href="https://neonchef.netlify.app">| 🌐 𝗟𝗜𝗩𝗘 Preview</a></h1>
 
 
 ## 🚀 Core Features
