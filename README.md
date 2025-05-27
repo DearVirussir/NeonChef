@@ -50,23 +50,23 @@ Experience NeonChef in its full visual glory. Each theme offers a unique aesthet
 
 ### 1. Default Theme
 *Sleek, modern, and mystically purple.*
-![Default Theme](docs/screenshot-default.png)
+![Default Theme](https://raw.githubusercontent.com/DearVirussir/NeonChef/refs/heads/main/screenshot-default.jpg)
 
 ### 2. Light Theme
 *Clean, crisp, and universally accessible.*
-![Light Theme](docs/screenshot-light.png)
+![Light Theme](https://raw.githubusercontent.com/DearVirussir/NeonChef/refs/heads/main/screenshot-light.jpg)
 
 ### 3. Cyber Theme
 *Enter the digital frontier with a TRON-inspired grid.*
-![Cyber Theme](docs/screenshot-cyber.png)
+![Cyber Theme](https://raw.githubusercontent.com/DearVirussir/NeonChef/refs/heads/main/screenshot-cyber.jpg)
 
 ### 4. Neon Theme
 *Vibrant, pulsating, and retro-futuristic.*
-![Neon Theme](docs/screenshot-neon.png)
+![Neon Theme](https://raw.githubusercontent.com/DearVirussir/NeonChef/refs/heads/main/screenshot-neon.jpg)
 
 ### 5. Hacker Theme
 *Code-green terminal vibes for the elite coder-chef.*
-![Hacker Theme](docs/screenshot-hacker.png)
+![Hacker Theme](https://raw.githubusercontent.com/DearVirussir/NeonChef/refs/heads/main/screenshot-hacker.jpg)
 
 *(Remember to replace `docs/` with your actual screenshot folder path if different!)*
 
@@ -157,5 +157,3 @@ Distributed under the MIT License. See `LICENSE` file for more information (if y
 ---
 
 💖 Thank you for checking out NeonChef! May your culinary adventures be ever more exciting. 💖
-
---- END OF COPY ---
