@@ -1,4 +1,3 @@
---- COPY FROM HERE ---
 # ✨ NeonChef ✨ <br> _Your AI-Powered Culinary Co-Pilot in a Neon Universe!_
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
