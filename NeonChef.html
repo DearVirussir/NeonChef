@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeonChef - AI Recipe Finder by Dear Virus</title>
+    <style>
+        /* Base Styles & Variables */
+        :root {
+            --primary: #6e48aa;
+            --secondary: #9d50bb;
+            --accent: #4776e6;
+            --text: #f8f8f8;
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --error: #ff4d4d;
+            --success: #4caf50;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Theme Overrides */
+        body.light {
+            --text: #333333;
+            --bg: #f5f5f5;
+            --card-bg: #ffffff;
+        }
+
+        body.cyber {
+            --primary: #00f0ff;
+            --secondary: #ff00f0;
+            --accent: #f0ff00;
+            --text: #00ff00;
+            --bg: #0a0a20;
+            --card-bg: #121235;
+        }
+
+        body.neon {
+            --primary: #ff00ff;
+            --secondary: #00ffff;
+            --accent: #ffff00;
+            --text: #ffffff;
+            --bg: #000000;
+            --card-bg: #1a1a1a;
+        }
+
+        body.hacker {
+            --primary: #00ff00;
+            --secondary: #009900;
+            --accent: #006600;
+            --text: #00ff00;
+            --bg: #000000;
+            --card-bg: #0a0a0a;
+        }
+
+        /* Background Animations */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        body:not(.cyber) .cyber-grid { display: none; }
+        body:not(.neon) .neon-pulse { display: none; }
+        body:not(.hacker) .hacker-code { display: none; }
+        body:not(.light) .light-pattern { display: none; }
+
+        .cyber-grid {
+            background-image:
+                linear-gradient(rgba(0, 240, 255, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.3) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: cyberMove 20s linear infinite;
+        }
+
+        .neon-pulse {
+            background: radial-gradient(circle at center, var(--primary), transparent 70%);
+            animation: neonPulse 4s ease infinite alternate;
+        }
+
+        .hacker-code {
+            background-image: linear-gradient(to bottom, rgba(0, 255, 0, 0.05) 0%, transparent 10%);
+            background-size: 100% 20px;
+            animation: hackerScroll 60s linear infinite;
+        }
+
+        .light-pattern {
+            background-image: radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        @keyframes cyberMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 40px 40px; }
+        }
+        @keyframes neonPulse {
+            0% { opacity: 0.1; transform: scale(1); }
+            100% { opacity: 0.3; transform: scale(1.2); }
+        }
+        @keyframes hackerScroll {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 1000px; }
+        }
+
+        /* 3D Floating Elements */
+        .floating-element {
+            position: fixed;
+            z-index: -1;
+            opacity: 0.2;
+            animation: float 15s infinite ease-in-out;
+        }
+        body.default .floating-element { background: radial-gradient(circle, var(--primary), transparent 70%); border-radius: 50%; }
+        body.cyber .floating-element { background: linear-gradient(45deg, var(--primary), var(--secondary)); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+        body.neon .floating-element { background: conic-gradient(from 180deg, var(--primary), var(--secondary), var(--accent), var(--primary)); border-radius: 20% 80% 30% 70% / 70% 30% 70% 30%; }
+        body.hacker .floating-element { background: repeating-linear-gradient(45deg, var(--primary), var(--primary) 5px, var(--bg) 5px, var(--bg) 10px); }
+        body.light .floating-element { background: linear-gradient(135deg, rgba(110,72,170,0.1), rgba(157,80,187,0.1)); border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-50px) rotate(5deg); }
+        }
+
+        /* Layout */
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; position: relative; z-index: 1; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; position: relative; }
+        .logo { font-size: 2rem; font-weight: bold; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 10px rgba(0, 0, 0, 0.3); position: relative; z-index: 1; }
+        .logo::after { content: ''; position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px; background: linear-gradient(to right, var(--primary), var(--secondary)); z-index: -1; filter: blur(15px); opacity: 0.5; border-radius: 10px; animation: glowPulse 3s infinite alternate; }
+        @keyframes glowPulse { 0% { opacity: 0.3; } 100% { opacity: 0.7; } }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .language-selector { position: relative; }
+        .language-select { padding: 0.5rem 1rem; border-radius: 4px; background-color: var(--card-bg); color: var(--text); border: 1px solid var(--primary); cursor: pointer; transition: var(--transition); appearance: none; padding-right: 2rem; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236e48aa'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.5rem center; background-size: 1rem; }
+        .language-select:hover { border-color: var(--accent); box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.3); }
+        .language-select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.5); }
+
+        .theme-selector { display: flex; gap: 0.5rem; position: relative; }
+        .theme-btn { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--text); cursor: pointer; transition: var(--transition); position: relative; overflow: hidden; }
+        .theme-btn::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.8), transparent 70%); opacity: 0; transition: var(--transition); }
+        .theme-btn:hover::before { opacity: 0.3; }
+        .theme-btn:hover { transform: scale(1.1) rotate(15deg); box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        .theme-btn.default { background: linear-gradient(135deg, #6e48aa, #9d50bb); }
+        .theme-btn.light { background: linear-gradient(135deg, #f5f5f5, #e0e0e0); }
+        .theme-btn.cyber { background: linear-gradient(135deg, #00f0ff, #ff00f0); }
+        .theme-btn.neon { background: linear-gradient(135deg, #ff00ff, #00ffff); }
+        .theme-btn.hacker { background: linear-gradient(135deg, #00ff00, #009900); }
+
+        .search-container { display: flex; flex-direction: column; gap: 1.5rem; margin-bottom: 2rem; position: relative; }
+        .search-box { display: flex; gap: 1rem; position: relative; }
+        .search-input { flex: 1; padding: 1rem; border: 2px solid var(--primary); border-radius: 8px; background-color: var(--card-bg); color: var(--text); font-size: 1rem; transition: var(--transition); box-shadow: 0 0 0 rgba(var(--primary-rgb), 0); position: relative; z-index: 1; }
+        .search-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 15px rgba(71, 118, 230, 0.7); transform: translateY(-2px); }
+        .search-input-container { position: relative; flex: 1; }
+        /* .search-input-container::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background: linear-gradient(to right, var(--primary), var(--secondary)); transition: width 0.3s ease; } */
+        /* .search-input:focus ~ .search-input-container::after { width: 100%; }  This selector needs sibling or direct parent context */
+
+
+        .search-btn { padding: 1rem 2rem; background: linear-gradient(to right, var(--primary), var(--secondary)); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: var(--transition); position: relative; overflow: hidden; z-index: 1; }
+        .search-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent); transition: all 0.5s ease; z-index: -1; }
+        .search-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); }
+        .search-btn:hover::before { left: 100%; }
+        .search-btn:disabled { background: #666; cursor: not-allowed; transform: none; box-shadow: none; }
+        .search-btn:disabled::before { display: none; }
+
+        .upload-area { border: 2px dashed var(--primary); border-radius: 8px; padding: 2rem; text-align: center; cursor: pointer; transition: var(--transition); background-color: var(--card-bg); position: relative; overflow: hidden; }
+        .upload-area::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(45deg, transparent, rgba(var(--primary-rgb), 0.1), transparent); opacity: 0; transition: var(--transition); }
+        .upload-area:hover::before { opacity: 1; animation: shine 1.5s infinite; }
+        @keyframes shine { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .upload-area:hover { border-color: var(--accent); background-color: rgba(var(--primary-rgb), 0.1); box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.2); }
+        .upload-area.active { border-color: var(--accent); background-color: rgba(var(--accent-rgb), 0.1); }
+        .upload-icon { font-size: 3rem; margin-bottom: 1rem; color: var(--primary); transition: var(--transition); display: inline-block; }
+        .upload-area:hover .upload-icon { transform: scale(1.2) rotate(10deg); filter: drop-shadow(0 0 5px var(--primary)); }
+
+        .image-preview-container { display: none; margin-top: 1rem; text-align: center; }
+        .image-preview { max-width: 100%; max-height: 200px; border-radius: 8px; border: 2px solid var(--primary); box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.5); margin-bottom: 0.5rem; transition: var(--transition); }
+        .image-preview:hover { transform: scale(1.02); box-shadow: 0 0 25px rgba(var(--primary-rgb), 0.7); }
+        .image-name { font-size: 0.9rem; color: var(--secondary); word-break: break-all; }
+
+        .filters { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
+        .filter-group { display: flex; flex-direction: column; gap: 0.5rem; position: relative; }
+        .filter-label { font-weight: bold; color: var(--primary); text-shadow: 0 0 5px rgba(var(--primary-rgb), 0.3); }
+        .filter-select { padding: 0.5rem; border-radius: 4px; background-color: var(--card-bg); color: var(--text); border: 1px solid var(--primary); transition: var(--transition); cursor: pointer; }
+        .filter-select:hover { border-color: var(--accent); box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.3); }
+        .filter-select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.5); }
+
+        .results-container { display: none; margin-top: 2rem; position: relative; }
+        .recipe-card { background-color: var(--card-bg); border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); transition: var(--transition); position: relative; overflow: hidden; border: 1px solid rgba(var(--primary-rgb), 0.2); }
+        .recipe-card::before { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent)); z-index: -1; filter: blur(5px); opacity: 0; transition: var(--transition); }
+        .recipe-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); }
+        .recipe-card:hover::before { opacity: 0.3; }
+        body.cyber .recipe-card { border: 1px solid rgba(0, 240, 255, 0.3); box-shadow: 0 0 10px rgba(0, 240, 255, 0.2); }
+        body.neon .recipe-card { border: 1px solid rgba(255, 0, 255, 0.3); box-shadow: 0 0 15px rgba(255, 0, 255, 0.3); }
+        body.hacker .recipe-card { border: 1px solid rgba(0, 255, 0, 0.3); box-shadow: 0 0 10px rgba(0, 255, 0, 0.2); }
+
+        .recipe-title { font-size: 1.8rem; margin-bottom: 1rem; color: var(--primary); position: relative; display: inline-block; }
+        .recipe-title::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 2px; background: linear-gradient(to right, var(--primary), var(--secondary)); transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; }
+        .recipe-card:hover .recipe-title::after { transform: scaleX(1); }
+        .recipe-image { width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem; transition: var(--transition); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
+        .recipe-image:hover { transform: scale(1.01); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); }
+
+        .recipe-meta { display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .recipe-meta-item { display: flex; align-items: center; gap: 0.5rem; background-color: rgba(var(--primary-rgb), 0.2); padding: 0.5rem 1rem; border-radius: 20px; transition: var(--transition); }
+        .recipe-meta-item:hover { transform: translateY(-2px); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); }
+
+        .recipe-section { margin-bottom: 1.5rem; }
+        .section-title { font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--secondary); display: flex; align-items: center; gap: 0.5rem; position: relative; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, var(--secondary), transparent); margin-left: 10px; }
+
+        .ingredients-list, .instructions-list { list-style-type: none; }
+
+        .ingredients-list li {
+            padding: 0.6rem 0;
+            border-bottom: 1px dashed rgba(var(--primary-rgb), 0.4);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .ingredients-list li::before {
+            content: '🍲'; /* Food-related emoji */
+            color: var(--accent);
+            font-size: 1em;
+            opacity: 0.8;
+            transition: transform 0.2s ease;
+        }
+
+        .instructions-list li {
+            margin-bottom: 0.75rem;
+            align-items: flex-start;
+            padding: 0.6rem 0;
+            border-bottom: 1px dashed rgba(var(--secondary-rgb), 0.3);
+            display: flex;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .instruction-step {
+            font-weight: bold;
+            color: var(--accent);
+            background-color: rgba(var(--accent-rgb), 0.15);
+            padding: 0.3em 0.6em;
+            border-radius: 6px;
+            margin-right: 0.75em;
+            text-align: center;
+            flex-shrink: 0;
+            min-width: 90px;
+            display: inline-block;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .instructions-list li > span:not(.instruction-step) {
+            flex-grow: 1;
+            line-height: 1.7;
+        }
+
+        .ingredients-list li:hover, .instructions-list li:hover {
+            background-color: rgba(var(--primary-rgb), 0.15);
+            border-radius: 8px;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            border-bottom-color: transparent;
+        }
+        .ingredients-list li:hover::before {
+            transform: scale(1.2) rotate(-5deg);
+        }
+        .instructions-list li:hover .instruction-step {
+            transform: translateX(-3px) scale(1.05);
+            box-shadow: 0 2px 5px rgba(var(--accent-rgb), 0.2);
+        }
+
+
+        .recipe-actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
+        .action-btn { padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: var(--transition); position: relative; overflow: hidden; }
+        .action-btn::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent); transform: translateX(-100%); transition: transform 0.5s ease; }
+        .action-btn:hover::after { transform: translateX(100%); }
+        .copy-btn { background-color: var(--primary); color: white; }
+        .export-btn { background-color: var(--accent); color: black; }
+        .action-btn:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); }
+
+        .loading { display: none; text-align: center; padding: 2rem; }
+        .spinner { width: 50px; height: 50px; border: 5px solid rgba(110, 72, 170, 0.3); border-radius: 50%; border-top-color: var(--primary); animation: spin 1s ease-in-out infinite; margin: 0 auto 1rem; position: relative; }
+        .spinner::before { content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border: 5px solid transparent; border-radius: 50%; border-top-color: var(--secondary); animation: spin 1.5s ease-in-out infinite reverse; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .error-message { display: none; background-color: var(--error); color: white; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; text-align: center; position: relative; overflow: hidden; }
+        .error-message::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent); animation: shine 1.5s infinite; }
+
+        /* Custom Cursor */
+        .cursor { position: fixed; width: 20px; height: 20px; border-radius: 50%; background-color: var(--primary); mix-blend-mode: difference; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease; }
+        body.light .cursor { mix-blend-mode: exclusion; }
+        body.cyber .cursor { width: 10px; height: 10px; background-color: var(--accent); box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent); animation: cyberCursor 0.5s infinite alternate; }
+        @keyframes cyberCursor { 0% { transform: translate(-50%, -50%) scale(1); } 100% { transform: translate(-50%, -50%) scale(1.2); } }
+        body.neon .cursor { background-color: var(--secondary); box-shadow: 0 0 10px var(--secondary), 0 0 20px var(--secondary); animation: neonCursor 0.8s infinite alternate; }
+        @keyframes neonCursor { 0% { transform: translate(-50%, -50%) scale(1); filter: hue-rotate(0deg); } 100% { transform: translate(-50%, -50%) scale(1.3); filter: hue-rotate(45deg); } }
+        body.hacker .cursor { background-color: transparent; border: 1px solid var(--primary); box-shadow: 0 0 10px var(--primary); animation: hackerCursor 1s infinite; }
+        @keyframes hackerCursor { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        /* Theme-specific 3D effects */
+        body.default .recipe-card { transform-style: preserve-3d; perspective: 1000px; }
+        body.default .recipe-card:hover { transform: translateY(-5px) rotateX(2deg) rotateY(2deg); }
+        body.cyber .recipe-card { transform-style: preserve-3d; perspective: 1000px; }
+        body.cyber .recipe-card:hover { transform: translateY(-5px) rotateX(5deg) rotateY(-5deg); box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3); }
+        body.neon .recipe-card { transform-style: preserve-3d; perspective: 1000px; }
+        body.neon .recipe-card:hover { transform: translateY(-5px) rotateX(3deg) rotateY(3deg); box-shadow: 0 10px 30px rgba(255, 0, 255, 0.3); }
+        body.hacker .recipe-card { transform-style: preserve-3d; perspective: 1000px; }
+        body.hacker .recipe-card:hover { transform: translateY(-5px) rotateX(1deg) rotateY(-1deg); box-shadow: 0 10px 30px rgba(0, 255, 0, 0.3); }
+
+        /* Developer Info Section */
+        .developer-info { position: fixed; bottom: 20px; right: 20px; background-color: var(--card-bg); border-radius: 10px; padding: 15px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); z-index: 100; max-width: 300px; transform: translateY(150px); opacity: 0; transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); border: 1px solid var(--primary); }
+        .developer-info.visible { transform: translateY(0); opacity: 1; }
+        .developer-header { display: flex; align-items: center; margin-bottom: 10px; }
+        .developer-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 10px; border: 2px solid var(--primary); }
+        .developer-name { font-weight: bold; color: var(--primary); }
+        .developer-nickname { font-size: 0.8rem; color: var(--secondary); }
+        .developer-contacts { margin-top: 10px; }
+        .contact-item { display: flex; align-items: center; margin-bottom: 5px; font-size: 0.9rem; }
+        .contact-icon { margin-right: 8px; color: var(--accent); }
+        .dev-toggle-btn { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(to right, var(--primary), var(--secondary)); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; z-index: 101; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); transition: all 0.3s ease; }
+        .dev-toggle-btn:hover { transform: scale(1.1); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            header { flex-direction: column; gap: 1rem; align-items: stretch; }
+            .header-controls { justify-content: space-between; }
+            .logo { text-align: center; }
+            .search-box { flex-direction: column; }
+            .search-btn { width: 100%; }
+            .filters { flex-direction: column; }
+            .recipe-actions { flex-direction: column; }
+            .action-btn { width: 100%; justify-content: center; }
+            .developer-info { max-width: calc(100% - 40px); right: 20px; left: 20px; bottom: 80px; /* Make space for toggle button */ }
+            .dev-toggle-btn {
+                 /* Keep toggle button at bottom right */
+            }
+        }
+    </style>
+</head>
+<body class="default">
+    <!-- Background Animations -->
+    <div class="bg-animation cyber-grid"></div>
+    <div class="bg-animation neon-pulse"></div>
+    <div class="bg-animation hacker-code"></div>
+    <div class="bg-animation light-pattern"></div>
+
+    <!-- Floating 3D Elements -->
+    <div class="floating-element" style="width: 200px; height: 200px; top: 10%; left: 5%; animation-delay: 0s;"></div>
+    <div class="floating-element" style="width: 150px; height: 150px; top: 70%; left: 80%; animation-delay: 2s;"></div>
+    <div class="floating-element" style="width: 250px; height: 250px; top: 30%; left: 60%; animation-delay: 4s;"></div>
+    <div class="floating-element" style="width: 180px; height: 180px; top: 80%; left: 20%; animation-delay: 6s;"></div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+
+    <div class="container">
+        <header>
+            <h1 class="logo">NeonChef</h1>
+            <div class="header-controls">
+                <div class="language-selector">
+                    <select class="language-select" id="language-select">
+                        <option value="en">🇬🇧 English</option>
+                        <option value="ur">🇵🇰 اردو</option>
+                        <option value="hi">🇮🇳 हिन्दी</option>
+                        <option value="ar">🇸🇦 العربية</option>
+                    </select>
+                </div>
+                <div class="theme-selector">
+                    <div class="theme-btn default" data-theme="default" title="Default Theme"></div>
+                    <div class="theme-btn light" data-theme="light" title="Light Theme"></div>
+                    <div class="theme-btn cyber" data-theme="cyber" title="Cyber Theme"></div>
+                    <div class="theme-btn neon" data-theme="neon" title="Neon Theme"></div>
+                    <div class="theme-btn hacker" data-theme="hacker" title="Hacker Theme"></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="error-message" id="error-message"></div>
+
+        <div class="search-container">
+            <div class="search-box">
+                <div class="search-input-container">
+                    <input type="text" class="search-input" id="search-input" placeholder="Search for recipes or ingredients...">
+                </div>
+                <button class="search-btn" id="search-btn">Search</button>
+            </div>
+
+            <div class="upload-area" id="upload-area">
+                <div class="upload-icon">📁</div>
+                <p id="upload-text">Drag & drop an image of your dish here or click to upload</p>
+                <input type="file" id="file-input" accept="image/*" style="display: none;">
+
+                <div class="image-preview-container" id="image-preview-container">
+                    <img class="image-preview" id="image-preview" src="" alt="Uploaded dish">
+                    <div class="image-name" id="image-name"></div>
+                </div>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label" id="diet-label">Dietary Preferences</label>
+                    <select class="filter-select" id="diet-filter">
+                        <option value="">Any</option>
+                        <option value="vegetarian">Vegetarian</option>
+                        <option value="vegan">Vegan</option>
+                        <option value="gluten-free">Gluten-Free</option>
+                        <option value="dairy-free">Dairy-Free</option>
+                        <option value="nut-free">Nut-Free</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label" id="cuisine-label">Cuisine Type</label>
+                    <select class="filter-select" id="cuisine-filter">
+                        <option value="">Any</option>
+                        <option value="italian">Italian</option>
+                        <option value="indian">Indian</option>
+                        <option value="chinese">Chinese</option>
+                        <option value="mexican">Mexican</option>
+                        <option value="american">American</option>
+                        <option value="japanese">Japanese</option>
+                        <option value="thai">Thai</option>
+                        <option value="mediterranean">Mediterranean</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p id="loading-text">Finding the perfect recipe for you...</p>
+        </div>
+
+        <div class="results-container" id="results-container">
+            <!-- Recipe cards will be inserted here -->
+        </div>
+    </div>
+
+    <!-- Developer Info Toggle Button -->
+    <button class="dev-toggle-btn" id="dev-toggle-btn">👨‍💻</button>
+
+    <!-- Developer Info Panel -->
+    <div class="developer-info" id="developer-info">
+        <div class="developer-header">
+            <img src="https://i.ibb.co/hJ0BKczX/folder3.jpg" alt="Dear Virus" class="developer-avatar">
+            <div>
+                <div class="developer-name">Syed Muhammad Khubaib Shah</div>
+                <div class="developer-nickname">"Dear Virus"</div>
+            </div>
+        </div>
+        <div class="developer-contacts">
+            <div class="contact-item">
+                <span class="contact-icon">📱</span>
+                <span>+92 370 9213915</span>
+            </div>
+            <div class="contact-item">
+                <span class="contact-icon">✉️</span>
+                <span>t.me/dear_virus</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Language translations
+        const translations = {
+            en: {
+                languageName: "English",
+                title: "Select Your Language",
+                searchPlaceholder: "Search for recipes or ingredients...",
+                searchBtn: "Search",
+                uploadText: "Drag & drop an image of your dish here or click to upload",
+                dietLabel: "Dietary Preferences",
+                cuisineLabel: "Cuisine Type",
+                loadingText: "Finding the perfect recipe for you...",
+                ingredients: "Ingredients",
+                instructions: "Instructions",
+                copyBtn: "Copy Recipe",
+                exportBtn: "Export",
+                any: "Any",
+                vegetarian: "Vegetarian",
+                vegan: "Vegan",
+                glutenFree: "Gluten-Free",
+                dairyFree: "Dairy-Free",
+                nutFree: "Nut-Free",
+                italian: "Italian",
+                indian: "Indian",
+                chinese: "Chinese",
+                mexican: "Mexican",
+                american: "American",
+                japanese: "Japanese",
+                thai: "Thai",
+                mediterranean: "Mediterranean",
+                step: "Step",
+                prepTime: "Prep Time",
+                cookTime: "Cook Time",
+                totalTime: "Total Time",
+                difficulty: "Difficulty",
+                serves: "Serves",
+                ingredientsNotFound: "Ingredients not found or couldn't be parsed.",
+                instructionsNotFound: "Instructions not found or couldn't be parsed."
+            },
+            ur: {
+                languageName: "Urdu",
+                title: "اپنی زبان منتخب کریں",
+                searchPlaceholder: "ترکیبوں یا اجزاء کی تلاش کریں...",
+                searchBtn: "تلاش کریں",
+                uploadText: "اپنے کھانے کی تصویر یہاں ڈراپ کریں یا اپ لوڈ کرنے کے لیے کلک کریں",
+                dietLabel: "غذائی ترجیحات",
+                cuisineLabel: "کھانے کی قسم",
+                loadingText: "آپ کے لیے بہترین ترکیب تلاش کی جا رہی ہے...",
+                ingredients: "اجزاء",
+                instructions: "ہدایات",
+                copyBtn: "ترکیب کاپی کریں",
+                exportBtn: "برآمد کریں",
+                any: "کوئی بھی",
+                vegetarian: "سبزی خور",
+                vegan: "ویگن",
+                glutenFree: "گلوٹین فری",
+                dairyFree: "ڈیری فری",
+                nutFree: "نٹ فری",
+                italian: "اطالوی",
+                indian: "ہندوستانی",
+                chinese: "چینی",
+                mexican: "میکسیکن",
+                american: "امریکی",
+                japanese: "جاپانی",
+                thai: "تھائی",
+                mediterranean: "بحیرہ روم",
+                step: "مرحلہ",
+                prepTime: "تیاری کا وقت",
+                cookTime: "پکانے کا وقت",
+                totalTime: "کل وقت",
+                difficulty: "مشکل",
+                serves: "افراد کے لئے",
+                ingredientsNotFound: "اجزاء نہیں ملے یا پارس نہیں کیے جا سکے۔",
+                instructionsNotFound: "ہدایات نہیں ملیں یا پارس نہیں کی جا سکیں۔"
+            },
+            hi: {
+                languageName: "Hindi",
+                title: "अपनी भाषा चुनें",
+                searchPlaceholder: "रेसिपी या सामग्री खोजें...",
+                searchBtn: "खोजें",
+                uploadText: "अपने व्यंजन की छवि यहां छोड़ें या अपलोड करने के लिए क्लिक करें",
+                dietLabel: "आहार प्राथमिकताएं",
+                cuisineLabel: "पाक शैली प्रकार",
+                loadingText: "आपके लिए सही रेसिपी ढूंढी जा रही है...",
+                ingredients: "सामग्री",
+                instructions: "निर्देश",
+                copyBtn: "रेसिपी कॉपी करें",
+                exportBtn: "निर्यात करें",
+                any: "कोई भी",
+                vegetarian: "शाकाहारी",
+                vegan: "वीगन",
+                glutenFree: "ग्लूटेन-मुक्त",
+                dairyFree: "डेयरी-मुक्त",
+                nutFree: "नट-मुक्त",
+                italian: "इतालवी",
+                indian: "भारतीय",
+                chinese: "चीनी",
+                mexican: "मैक्सिकन",
+                american: "अमेरिकन",
+                japanese: "जापानी",
+                thai: "थाई",
+                mediterranean: "भूमध्यसागरीय",
+                step: "चरण",
+                prepTime: "तैयारी का समय",
+                cookTime: "पकाने का समय",
+                totalTime: "कुल समय",
+                difficulty: "कठिनाई",
+                serves: "सर्विंग्स",
+                ingredientsNotFound: "सामग्री नहीं मिली या पार्स नहीं की जा सकी।",
+                instructionsNotFound: "निर्देश नहीं मिले या पार्स नहीं किए जा सके।"
+            },
+            ar: {
+                languageName: "Arabic",
+                title: "اختر لغتك",
+                searchPlaceholder: "ابحث عن وصفات أو مكونات...",
+                searchBtn: "بحث",
+                uploadText: "اسحب وأسقط صورة طبقك هنا أو انقر للتحميل",
+                dietLabel: "التفضيلات الغذائية",
+                cuisineLabel: "نوع المطبخ",
+                loadingText: "البحث عن الوصفة المثالية لك...",
+                ingredients: "المكونات",
+                instructions: "التعليمات",
+                copyBtn: "نسخ الوصفة",
+                exportBtn: "تصدير",
+                any: "أي",
+                vegetarian: "نباتي",
+                vegan: "نباتي صرف",
+                glutenFree: "خالي من الغلوتين",
+                dairyFree: "خالي من الألبان",
+                nutFree: "خالي من المكسرات",
+                italian: "إيطالي",
+                indian: "هندي",
+                chinese: "صيني",
+                mexican: "مكسيكي",
+                american: "أمريكي",
+                japanese: "ياباني",
+                thai: "تايلاندي",
+                mediterranean: "متوسطي",
+                step: "خطوة",
+                prepTime: "وقت التحضير",
+                cookTime: "وقت الطهي",
+                totalTime: "الوقت الإجمالي",
+                difficulty: "الصعوبة",
+                serves: "حصص",
+                ingredientsNotFound: "لم يتم العثور على المكونات أو تعذر تحليلها.",
+                instructionsNotFound: "لم يتم العثور على التعليمات أو تعذر تحليلها."
+            }
+        };
+
+        // API Configuration
+        const API_KEY = 'YOUR_GEMINI_API_KEY'; // IMPORTANT: Replace with your actual Gemini API Key
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent`;
+
+
+        // Set RGB values for primary colors
+        function updateThemeColors(theme) {
+            let primaryRgb, secondaryRgb, accentRgb;
+            switch(theme) {
+                case 'cyber':
+                    primaryRgb = '0, 240, 255'; secondaryRgb = '255, 0, 240'; accentRgb = '240, 255, 0';
+                    break;
+                case 'neon':
+                    primaryRgb = '255, 0, 255'; secondaryRgb = '0, 255, 255'; accentRgb = '255, 255, 0';
+                    break;
+                case 'hacker':
+                    primaryRgb = '0, 255, 0'; secondaryRgb = '0, 153, 0'; accentRgb = '0, 102, 0';
+                    break;
+                case 'light': // Fallback to default for light, or define specific light theme RGBs if needed
+                default:
+                    primaryRgb = '110, 72, 170'; secondaryRgb = '157, 80, 187'; accentRgb = '71, 118, 230';
+                    break;
+            }
+            document.documentElement.style.setProperty('--primary-rgb', primaryRgb);
+            document.documentElement.style.setProperty('--secondary-rgb', secondaryRgb);
+            document.documentElement.style.setProperty('--accent-rgb', accentRgb);
+        }
+
+
+        // DOM Elements
+        const searchInputEl = document.getElementById('search-input');
+        const searchBtnEl = document.getElementById('search-btn');
+        const uploadAreaEl = document.getElementById('upload-area');
+        const fileInputEl = document.getElementById('file-input');
+        const resultsContainerEl = document.getElementById('results-container');
+        const loadingElementEl = document.getElementById('loading');
+        const errorElementEl = document.getElementById('error-message');
+        const dietFilterEl = document.getElementById('diet-filter');
+        const cuisineFilterEl = document.getElementById('cuisine-filter');
+        const themeButtonsEl = document.querySelectorAll('.theme-btn');
+        const cursorEl = document.querySelector('.cursor');
+        const imagePreviewContainerEl = document.getElementById('image-preview-container');
+        const imagePreviewEl = document.getElementById('image-preview');
+        const imageNameEl = document.getElementById('image-name');
+        const devToggleBtnEl = document.getElementById('dev-toggle-btn');
+        const developerInfoEl = document.getElementById('developer-info');
+        const languageSelectEl = document.getElementById('language-select');
+        const uploadTextEl = document.getElementById('upload-text');
+        const dietLabelEl = document.getElementById('diet-label');
+        const cuisineLabelEl = document.getElementById('cuisine-label');
+        const loadingTextEl = document.getElementById('loading-text');
+
+        // Current language
+        let currentLanguage = 'en';
+
+        // Initialize the page
+        function init() {
+            if (API_KEY === 'YOUR_GEMINI_API_KEY') {
+                showError('Please replace "YOUR_GEMINI_API_KEY" with your actual Gemini API Key in the script.');
+                console.error('CRITICAL: Gemini API Key is not set.');
+            }
+            // Language selector
+            languageSelectEl.addEventListener('change', (e) => {
+                currentLanguage = e.target.value;
+                setLanguage(currentLanguage);
+                localStorage.setItem('neonChefLanguage', currentLanguage);
+            });
+
+            const savedLanguage = localStorage.getItem('neonChefLanguage') || 'en';
+            currentLanguage = savedLanguage;
+            languageSelectEl.value = currentLanguage;
+            setLanguage(currentLanguage);
+
+            // Theme Handling
+            themeButtonsEl.forEach(button => {
+                button.addEventListener('click', () => {
+                    const theme = button.dataset.theme;
+                    document.body.className = theme;
+                    updateThemeColors(theme);
+                    localStorage.setItem('neonChefTheme', theme);
+                });
+            });
+
+            const savedTheme = localStorage.getItem('neonChefTheme') || 'default';
+            document.body.className = savedTheme;
+            updateThemeColors(savedTheme);
+
+
+            // Custom Cursor
+            document.addEventListener('mousemove', (e) => {
+                cursorEl.style.left = `${e.clientX}px`;
+                cursorEl.style.top = `${e.clientY}px`;
+            });
+
+            const interactiveElements = document.querySelectorAll('button, .upload-area, .theme-btn, .action-btn, input, select');
+            interactiveElements.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursorEl.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursorEl.style.transform = 'translate(-50%, -50%) scale(1)';
+                });
+            });
+
+            // Upload Area Handling
+            uploadAreaEl.addEventListener('click', () => fileInputEl.click());
+
+            fileInputEl.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    const file = e.target.files[0];
+                    displayImagePreview(file);
+                    handleImageUpload(file);
+                }
+            });
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadAreaEl.addEventListener(eventName, preventDefaults, false);
+            });
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadAreaEl.addEventListener(eventName, highlight, false);
+            });
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadAreaEl.addEventListener(eventName, unhighlight, false);
+            });
+            uploadAreaEl.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const file = dt.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    displayImagePreview(file);
+                    handleImageUpload(file);
+                }
+            });
+
+            // Search Handling
+            searchBtnEl.addEventListener('click', () => {
+                const query = searchInputEl.value.trim();
+                if (query) {
+                    searchRecipes(query);
+                }
+            });
+            searchInputEl.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const query = searchInputEl.value.trim();
+                    if (query) {
+                        searchRecipes(query);
+                    }
+                }
+            });
+
+            // Developer Info Toggle
+            devToggleBtnEl.addEventListener('click', () => {
+                developerInfoEl.classList.toggle('visible');
+            });
+        }
+
+        function setLanguage(lang) {
+            const t = translations[lang];
+            searchInputEl.placeholder = t.searchPlaceholder;
+            searchBtnEl.textContent = t.searchBtn;
+            uploadTextEl.textContent = t.uploadText;
+            dietLabelEl.textContent = t.dietLabel;
+            cuisineLabelEl.textContent = t.cuisineLabel;
+            loadingTextEl.textContent = t.loadingText;
+
+            document.querySelector('#diet-filter option[value=""]').textContent = t.any;
+            document.querySelector('#diet-filter option[value="vegetarian"]').textContent = t.vegetarian;
+            document.querySelector('#diet-filter option[value="vegan"]').textContent = t.vegan;
+            document.querySelector('#diet-filter option[value="gluten-free"]').textContent = t.glutenFree;
+            document.querySelector('#diet-filter option[value="dairy-free"]').textContent = t.dairyFree;
+            document.querySelector('#diet-filter option[value="nut-free"]').textContent = t.nutFree;
+
+            document.querySelector('#cuisine-filter option[value=""]').textContent = t.any;
+            document.querySelector('#cuisine-filter option[value="italian"]').textContent = t.italian;
+            document.querySelector('#cuisine-filter option[value="indian"]').textContent = t.indian;
+            document.querySelector('#cuisine-filter option[value="chinese"]').textContent = t.chinese;
+            document.querySelector('#cuisine-filter option[value="mexican"]').textContent = t.mexican;
+            document.querySelector('#cuisine-filter option[value="american"]').textContent = t.american;
+            document.querySelector('#cuisine-filter option[value="japanese"]').textContent = t.japanese;
+            document.querySelector('#cuisine-filter option[value="thai"]').textContent = t.thai;
+            document.querySelector('#cuisine-filter option[value="mediterranean"]').textContent = t.mediterranean;
+            
+            // If results are already displayed, re-render them with new language for labels (content is from API)
+            if (resultsContainerEl.style.display === 'block' && resultsContainerEl.innerHTML !== '') {
+                const currentRecipeTitle = resultsContainerEl.querySelector('.recipe-title')?.textContent || "Recipe";
+                const currentRecipeText = resultsContainerEl.dataset.rawRecipeText || ""; // Store raw text if needed
+                if(currentRecipeText) displayRecipe(currentRecipeText, currentRecipeTitle);
+            }
+        }
+
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+        function highlight() { uploadAreaEl.classList.add('active'); }
+        function unhighlight() { uploadAreaEl.classList.remove('active'); }
+
+        function displayImagePreview(file) {
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreviewEl.src = e.target.result;
+                    imageNameEl.textContent = file.name;
+                    imagePreviewContainerEl.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function searchRecipes(query) {
+            showLoading();
+            hideError();
+            resultsContainerEl.style.display = 'none';
+
+
+            const diet = dietFilterEl.value;
+            const cuisine = cuisineFilterEl.value;
+            const targetLanguageName = translations[currentLanguage].languageName;
+
+            let prompt = `Provide a detailed recipe for: ${query}`;
+            if (diet) prompt += ` that is ${diet}`;
+            if (cuisine) prompt += ` in ${cuisine} cuisine style`;
+
+            prompt += `.
+The entire recipe, including ingredients, instructions, cooking times, difficulty, and serves, MUST be in ${targetLanguageName}.
+However, use the following EXACT English headers for parsing:
+Recipe Title: [Recipe Name in ${targetLanguageName}]
+Ingredients:
+[List of ingredients in ${targetLanguageName}]
+Instructions:
+[Step-by-step instructions in ${targetLanguageName}]
+Prep Time: [Prep time in ${targetLanguageName}]
+Cook Time: [Cook time in ${targetLanguageName}]
+Total Time: [Total time in ${targetLanguageName}]
+Difficulty: [Difficulty level in ${targetLanguageName}]
+Serves: [Number of servings in ${targetLanguageName}]
+
+Ensure the ingredients are listed one per line.
+Ensure the instructions are listed one step per line, clearly numbered or starting with "Step X:".`;
+
+            try {
+                const responseText = await callGeminiAPI(prompt);
+                displayRecipe(responseText, query); // The title might be overridden by API's "Recipe Title:"
+            } catch (error) {
+                showError(`Failed to fetch recipes in ${targetLanguageName}. Error: ${error.message}`);
+                console.error('Error:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function handleImageUpload(file) {
+            showLoading();
+            hideError();
+            resultsContainerEl.style.display = 'none';
+
+            try {
+                const base64Image = await readFileAsBase64(file);
+                const targetLanguageName = translations[currentLanguage].languageName;
+
+                const prompt = `Identify the dish in this image and provide a detailed recipe for it.
+The entire recipe, including the dish name, ingredients, instructions, cooking times, difficulty, and serves, MUST be in ${targetLanguageName}.
+However, use the following EXACT English headers for parsing:
+Recipe Title: [Dish Name in ${targetLanguageName}]
+Ingredients:
+[List of ingredients in ${targetLanguageName}]
+Instructions:
+[Step-by-step instructions in ${targetLanguageName}]
+Prep Time: [Prep time in ${targetLanguageName}]
+Cook Time: [Cook time in ${targetLanguageName}]
+Total Time: [Total time in ${targetLanguageName}]
+Difficulty: [Difficulty level in ${targetLanguageName}]
+Serves: [Number of servings in ${targetLanguageName}]
+
+Ensure the ingredients are listed one per line.
+Ensure the instructions are listed one step per line, clearly numbered or starting with "Step X:".`;
+
+                const responseText = await callGeminiAPI(prompt, base64Image);
+                // The title will be taken from "Recipe Title:" in the API response
+                displayRecipe(responseText, "Uploaded Dish: " + file.name.split('.')[0]);
+            } catch (error) {
+                showError(`Failed to identify dish or get recipe in ${targetLanguageName}. Error: ${error.message}`);
+                console.error('Error:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    const base64String = reader.result.split(',')[1];
+                    resolve(base64String);
+                };
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        async function callGeminiAPI(prompt, imageBase64 = null) {
+            const requestBody = {
+                contents: [{
+                    parts: [{ text: prompt }]
+                }]
+            };
+
+            if (imageBase64) {
+                requestBody.contents[0].parts.push({
+                    inline_data: {
+                        mime_type: "image/jpeg", // Or appropriate type
+                        data: imageBase64
+                    }
+                });
+            }
+
+            const response = await fetch(`${API_URL}?key=${API_KEY}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({})); // Try to parse error
+                console.error("API Error Response:", errorData);
+                throw new Error(`API request failed: ${response.status} ${response.statusText}. ${errorData.error?.message || ''}`);
+            }
+
+            const data = await response.json();
+            if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) {
+                return data.candidates[0].content.parts[0].text;
+            } else if (data.promptFeedback && data.promptFeedback.blockReason) {
+                 throw new Error(`API blocked request: ${data.promptFeedback.blockReason}. ${data.promptFeedback.blockReasonMessage || ''}`);
+            }
+            else {
+                console.error("Unexpected API response format:", data);
+                throw new Error('Unexpected API response format. Check console for details.');
+            }
+        }
+
+        function displayRecipe(recipeText, fallbackTitle) {
+            resultsContainerEl.innerHTML = '';
+            resultsContainerEl.dataset.rawRecipeText = recipeText; // Store for potential re-rendering
+
+            const t = translations[currentLanguage];
+
+            // Helper to extract content between headers
+            const extractSection = (startHeader, endHeader) => {
+                const startIndex = recipeText.indexOf(startHeader);
+                if (startIndex === -1) return null;
+                const contentStartIndex = startIndex + startHeader.length;
+                let contentEndIndex = recipeText.length;
+                if (endHeader) {
+                    const endIndex = recipeText.indexOf(endHeader, contentStartIndex);
+                    if (endIndex !== -1) contentEndIndex = endIndex;
+                }
+                return recipeText.substring(contentStartIndex, contentEndIndex).trim();
+            };
+            
+            // Helper to extract single line value after a header
+            const extractSingleLineValue = (header) => {
+                const match = recipeText.match(new RegExp(header + "\\s*(.*?)(\\n|$)"));
+                return match ? match[1].trim() : null;
+            };
+
+            let recipeTitle = extractSingleLineValue("Recipe Title:") || fallbackTitle;
+            const ingredientsText = extractSection("Ingredients:", "Instructions:");
+            const instructionsText = extractSection("Instructions:", "Prep Time:"); // Or to end if Prep Time not found
+
+            const prepTime = extractSingleLineValue("Prep Time:");
+            const cookTime = extractSingleLineValue("Cook Time:");
+            const totalTime = extractSingleLineValue("Total Time:");
+            const difficulty = extractSingleLineValue("Difficulty:");
+            const serves = extractSingleLineValue("Serves:");
+
+            const ingredients = ingredientsText ?
+                ingredientsText.split('\n').map(line => line.trim().replace(/^- /, '')).filter(line => line) :
+                [t.ingredientsNotFound];
+
+            const instructions = instructionsText ?
+                instructionsText.split('\n').map(line => line.trim().replace(/^\d+\.\s*/, '').replace(/^- /, '')).filter(line => line) :
+                [t.instructionsNotFound];
+
+
+            const recipeCard = document.createElement('div');
+            recipeCard.className = 'recipe-card';
+
+            const imageHtml = imagePreviewContainerEl.style.display === 'block' ?
+                `<img src="${imagePreviewEl.src}" class="recipe-image" alt="${recipeTitle}">` :
+                '';
+
+            recipeCard.innerHTML = `
+                <h2 class="recipe-title">${recipeTitle}</h2>
+                ${imageHtml}
+                <div class="recipe-meta">
+                    ${prepTime ? `<div class="recipe-meta-item">⏳ ${t.prepTime}: ${prepTime}</div>` : ''}
+                    ${cookTime ? `<div class="recipe-meta-item">🍳 ${t.cookTime}: ${cookTime}</div>` : ''}
+                    ${totalTime ? `<div class="recipe-meta-item">⏱️ ${t.totalTime}: ${totalTime}</div>` : ''}
+                    ${difficulty ? `<div class="recipe-meta-item">⚡ ${t.difficulty}: ${difficulty}</div>` : ''}
+                    ${serves ? `<div class="recipe-meta-item">👨‍👩‍👧‍👦 ${t.serves}: ${serves}</div>` : ''}
+                </div>
+                <div class="recipe-section">
+                    <h3 class="section-title">📝 ${t.ingredients}</h3>
+                    <ul class="ingredients-list">
+                        ${ingredients.map(ing => `<li>${ing}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="recipe-section">
+                    <h3 class="section-title">📋 ${t.instructions}</h3>
+                    <ol class="instructions-list">
+                        ${instructions.map((inst, i) => `
+                            <li>
+                                <span class="instruction-step">${t.step} ${i + 1}:</span>
+                                <span>${inst}</span>
+                            </li>
+                        `).join('')}
+                    </ol>
+                </div>
+                <div class="recipe-actions">
+                    <button class="action-btn copy-btn" onclick="copyRecipe(this)">📋 ${t.copyBtn}</button>
+                    <button class="action-btn export-btn" onclick="exportRecipe(this)">📤 ${t.exportBtn}</button>
+                </div>
+            `;
+
+            resultsContainerEl.appendChild(recipeCard);
+            resultsContainerEl.style.display = 'block';
+        }
+
+
+        function showLoading() {
+            loadingElementEl.style.display = 'block';
+            searchBtnEl.disabled = true;
+        }
+        function hideLoading() {
+            loadingElementEl.style.display = 'none';
+            searchBtnEl.disabled = false;
+        }
+        function showError(message) {
+            errorElementEl.textContent = message;
+            errorElementEl.style.display = 'block';
+        }
+        function hideError() {
+            errorElementEl.style.display = 'none';
+        }
+
+        window.copyRecipe = function(button) {
+            const recipeCard = button.closest('.recipe-card');
+            const t = translations[currentLanguage];
+            const recipeText = `
+${recipeCard.querySelector('.recipe-title').textContent}
+
+${t.ingredients}:
+${Array.from(recipeCard.querySelectorAll('.ingredients-list li')).map(li => li.textContent.trim()).join('\n')}
+
+${t.instructions}:
+${Array.from(recipeCard.querySelectorAll('.instructions-list li')).map(li => {
+    const step = li.querySelector('.instruction-step').textContent.trim();
+    const text = li.querySelector('span:not(.instruction-step)').textContent.trim();
+    return `${step} ${text}`;
+}).join('\n')}
+            `.trim();
+
+            navigator.clipboard.writeText(recipeText).then(() => {
+                const originalText = button.innerHTML; // Store full HTML to preserve icon
+                button.innerHTML = `✓ ${t.copyBtn.replace('Copy Recipe', 'Copied!')}`;
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                }, 2000);
+            }).catch(err => console.error('Failed to copy: ', err));
+        };
+
+        window.exportRecipe = function(button) {
+            const recipeCard = button.closest('.recipe-card');
+            const t = translations[currentLanguage];
+             const recipeText = `
+${recipeCard.querySelector('.recipe-title').textContent}
+
+${t.ingredients}:
+${Array.from(recipeCard.querySelectorAll('.ingredients-list li')).map(li => li.textContent.trim()).join('\n')}
+
+${t.instructions}:
+${Array.from(recipeCard.querySelectorAll('.instructions-list li')).map(li => {
+    const step = li.querySelector('.instruction-step').textContent.trim();
+    const text = li.querySelector('span:not(.instruction-step)').textContent.trim();
+    return `${step} ${text}`;
+}).join('\n')}
+            `.trim();
+
+            const blob = new Blob([recipeText], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${recipeCard.querySelector('.recipe-title').textContent.replace(/[^a-z0-9]/gi, '_')}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            const originalText = button.innerHTML;
+            button.innerHTML = `✓ ${t.exportBtn.replace('Export', 'Exported!')}`;
+            setTimeout(() => {
+                button.innerHTML = originalText;
+            }, 2000);
+        };
+
+        init();
+    </script>
+</body>
+</html>
