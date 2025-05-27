@@ -2,12 +2,14 @@
 # ✨ NeonChef ✨ <br> _Your AI-Powered Culinary Co-Pilot in a Neon Universe!_
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitHub stars](https://img.shields.io/github/stars/YOUR_USERNAME/YOUR_REPONAME?style=social)](https://github.com/YOUR_USERNAME/YOUR_REPONAME/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/YOUR_USERNAME/YOUR_REPONAME?style=social)](https://github.com/YOUR_USERNAME/YOUR_REPONAME/network/members)
+[![GitHub stars](https://img.shields.io/github/stars/DearVirussir/NeonChef?style=social)](https://github.com/DearVirussir/NeonChef/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/DearVirussir/NeonChef?style=social)](https://github.com/DearVirussir/NeonChef/network/members)
 
 > Dive into the culinary cosmos with NeonChef, a hyper-stylized, AI-driven recipe finder that transforms your meal ideas and even dish photos into delectable recipes. Crafted with a futuristic aesthetic by **Dear Virus**, NeonChef isn't just a tool; it's an experience.
-
 ---
+
+<h1><a href="https://voluble-cuchufli-bbf97e.netlify.app">| 🌐 𝗟𝗜𝗩𝗘 Preview</a></h1>
+
 
 ## 🚀 Core Features
 
